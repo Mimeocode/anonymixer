@@ -1,7 +1,7 @@
 import flet as ft
 from entities import Submission, SubmissionTable
 
-MIMEO = "#6700ba"
+MIMEO = "#47009e"
 
 
 def st(string: str | float | int = ""):
