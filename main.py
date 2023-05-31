@@ -4,14 +4,22 @@ from entities import Submission, SubmissionTable
 MIMEO = "#6700ba"
 
 
-def st(string: str = ""):
+def st(string: str | float | int = ""):
     return ft.Text(string, color=ft.colors.BLACK87)
 
 
 def main(page: ft.Page):
-    page.title = "Flet counter example"
+    page.title = "MimeoCode - Anonymixer"
+    page.window_frameless = True
     page.bgcolor = ft.colors.WHITE
-    page.appbar = ft.AppBar(title=ft.Text("MimeoCode - Anonymixer"), bgcolor=MIMEO,)
+
+    page.appbar = ft.AppBar(leading=ft.Image("assets/images/mc-logo.png"),
+                            title=ft.Text("MimeoCode - Anonymixer"),
+                            actions=[ft.Container(content=ft.IconButton(ft.icons.CLOSE, on_click=lambda _: page.window_close()),
+                                                  padding=10
+                                                  )],
+                            bgcolor=MIMEO,
+                            )
     page.vertical_alignment = ft.MainAxisAlignment.START
     page.horizontal_alignment = ft.CrossAxisAlignment.END
 
@@ -30,7 +38,7 @@ def main(page: ft.Page):
             [
                 ft.Text("Select the submissions to anonymize. zip files are supported."),
             ],
-            alignment=ft.MainAxisAlignment.START,),
+            alignment=ft.MainAxisAlignment.START, ),
         actions=[
             ft.TextButton("Yes", on_click=_close_popup),
             ft.TextButton("No", on_click=_close_popup),
@@ -49,23 +57,30 @@ def main(page: ft.Page):
         if sub_table.is_empty():
             rows = [ft.DataRow(cells=[ft.DataCell(st("There is no Submission yet!")),
                                       ft.DataCell(st("Press the Button in the right corner to add a Submission")),
-                                      ft.DataCell(st()),
-                                      ft.DataCell(st())])]
+                                      ft.DataCell(st("no filetype")),
+                                      ft.DataCell(st(420)),
+                                      ft.DataCell(ft.IconButton(ft.icons.EDIT, icon_color=ft.colors.GREY)),
+                                      ft.DataCell(ft.IconButton(ft.icons.DELETE, icon_color=ft.colors.GREY))])]
         else:
             for submission in sub_table.get_submission():
                 rows.append(ft.DataRow(cells=[ft.DataCell(st(submission.name)),
                                               ft.DataCell(st(submission.status)),
-                                              ft.DataCell(ft.IconButton(ft.icons.EDIT)),
-                                              ft.DataCell(ft.IconButton(ft.icons.DELETE))]))
+                                              ft.DataCell(st(submission.file_type)),
+                                              ft.DataCell(st(submission.file_count)),
+                                              ft.DataCell(ft.IconButton(ft.icons.EDIT, icon_color=MIMEO)),
+                                              ft.DataCell(ft.IconButton(ft.icons.DELETE, icon_color=MIMEO))]))
                 # TODO: add button functionality
 
         table = ft.Row([
             ft.Divider(height=50),
             ft.DataTable(columns=[ft.DataColumn(st("Submission")),
                                   ft.DataColumn(st("Status")),
-                                  ft.DataColumn(st()), ft.DataColumn(st())],
+                                  ft.DataColumn(st("File Type")),
+                                  ft.DataColumn(st("Number of Files")),
+                                  ft.DataColumn(st("Edit")), ft.DataColumn(st("Delete"))],
                          rows=rows,
-                         width="60%")], alignment=ft.MainAxisAlignment.CENTER)
+                         width="60%")],
+            alignment=ft.MainAxisAlignment.CENTER)
         return table
 
     # Toolbar for adding new submissions
