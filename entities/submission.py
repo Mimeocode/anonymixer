@@ -1,18 +1,28 @@
 from typing import List
 import os
 import shutil
-
+import uuid
 
 class Submission:
 
-    def __init__(self, name: str, file_type: str):
+    def __init__(self,
+                 name: str,
+                 file_type: str,
+                 uid: str = None,
+                 file_count: int = 0,
+                 status: str = "In Progess",
+                 file_names: List[str] = [],
+                 hashed_file_names: List[str] = []
+                 ):
+        self.uid = uuid.uuid4().hex if uid is None else uid
+
         self.name = name
         self.file_type = file_type
 
-        self.file_count: int = 0
-        self.status: str = "In Progress"
-        self.file_names: List[str] = []
-        self.hashed_file_names: List[str] = []
+        self.file_count = file_count
+        self.status = status
+        self.file_names = file_names
+        self.hashed_file_names = hashed_file_names
 
     def anonymize_submissions(self, path: str, seperator: str = None, snippet_index: int = None):
         os.makedirs(hashed_path := f"{path}_hashed")
