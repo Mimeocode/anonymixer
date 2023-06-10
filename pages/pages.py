@@ -38,8 +38,12 @@ class Pages:
                                               ft.DataCell(st(submission.status)),
                                               ft.DataCell(st(submission.file_type)),
                                               ft.DataCell(st(submission.file_count)),
-                                              ft.DataCell(ft.IconButton(ft.icons.EDIT, icon_color=MIMEO, on_click=lambda _: _edit_submission(submission))),
-                                              ft.DataCell(ft.IconButton(ft.icons.DELETE, icon_color=MIMEO, on_click=lambda _: _del_submission(submission)))]))
+                                              ft.DataCell(ft.IconButton(ft.icons.EDIT, icon_color=MIMEO,
+                                                                        on_click=lambda _: _edit_submission(
+                                                                            submission))),
+                                              ft.DataCell(ft.IconButton(ft.icons.DELETE, icon_color=MIMEO,
+                                                                        on_click=lambda _: _del_submission(
+                                                                            submission)))]))
                 # TODO: add button functionality
 
         table = ft.Row([
@@ -97,15 +101,47 @@ class Pages:
 
     @classmethod
     def get_submission_page(cls, page: ft.Page, submission_uid: str = None):
+        def _update_fields():
+            _save_submission()
+            page.go(f"/submission/{submission.uid}")
+
+        def on_dialog_result(e: ft.FilePickerResultEvent):
+            if no_anon:
+                page.splash = ft.ProgressBar()
+                page.update()
+                if sub_name.value is None and file_type.value is None:
+                    print("name submission and filename before!")  # TODO: make proper error handling
+                    return None
+                submission.anonymize_submissions(path=e.files[0].path, seperator="_",
+                                                 snippet_index=lambda x: x[0] if "LATE" not in x[
+                                                     0] else f"{x[0]}_{x[1]}")
+                submission.status = "Anonymized - Waiting for Results"
+                page.splash = None
+                page.update()
+                _update_fields()
+            else:
+                print("deanonymize the stuff now")
+
+        file_picker = ft.FilePicker(on_result=on_dialog_result)
+        page.overlay.append(file_picker)
+        page.update()
 
         def _title_change(e):
+            submission.name = e.control.value
             title_field.value = e.control.value
+
+        def _filetype_change(e):
+            submission.file_type = e.control.value
+            file_type.value = e.control.value
+            no_sub = False
             page.update()
 
-        def _save_submission(e):
+        def _save_submission():
             sub_table = cls._get_table_data(page)
             if submission_uid is None:
-                new_sub = Submission(sub_name.value, file_type.value)
+                if submission.name == "" or submission.file_type == "":
+                    return None
+                new_sub = submission
             else:
                 _, new_sub = sub_table.get_submission(submission_uid)
                 new_sub.name = sub_name.value
@@ -113,16 +149,16 @@ class Pages:
             cls._set_table_data(page, sub_table)
 
         def _return_to_mainpage(e):
-            _save_submission(e)
+            _save_submission()
             page.go("/")
 
-        no_sub = True
+        submission = Submission()
         routing = "/submission"
         if submission_uid is not None:
             routing = f"/submission/{submission_uid}"
-            no_sub = False
             sub_tab = cls._get_table_data(page)
             _, submission = sub_tab.get_submission(submission_uid)
+        no_anon = submission.file_count == 0
 
         view = ft.View(
             routing,
@@ -139,19 +175,36 @@ class Pages:
                              content=ft.Row([sub_name := ft.TextField(label="Submission Name",
                                                                       on_change=_title_change,
                                                                       color=ft.colors.BLACK87,
-                                                                      value="" if no_sub else submission.name
+                                                                      value=submission.name
                                                                       ),
                                              file_type := ft.TextField(label="File Type",
+                                                                       on_change=_filetype_change,
                                                                        tooltip="Example: py, ipynb, cpp, js",
                                                                        color=ft.colors.BLACK87,
-                                                                       value="" if no_sub else submission.file_type,
-                                                                       disabled=not no_sub,
+                                                                       value=submission.file_type,
+                                                                       disabled= not no_anon,
                                                                        ),
                                              ]
 
                                             )),
-                #ft.Row([ft.Container(padding=20, content=ft.TextButton("Save", on_click=_save_submission))],
-                #      alignment=ft.MainAxisAlignment.END)
+                ft.Container(padding=50,
+                             content=ft.Row([ft.ElevatedButton("Anonymize Submission",
+                                                               on_click=lambda _: file_picker.pick_files(
+                                                                   allow_multiple=False,
+                                                                   allowed_extensions=["zip"], ),
+                                                               disabled=not no_anon),
+                                             ft.ElevatedButton("Deanonymize Submission",
+                                                               on_click=lambda
+                                                                   _: file_picker.pick_files(
+                                                                   allow_multiple=False,
+                                                                   allowed_extensions=["tex"]),
+                                                               disabled=no_anon)
+
+                                             # TODO: use files
+                                             ],
+                                            alignment=ft.MainAxisAlignment.CENTER)),
+                ft.Container(padding=20, content=ft.Row([file_amt := st(f"Amount of files to check: {submission.file_count}")],
+                                                        alignment=ft.MainAxisAlignment.CENTER))
             ],
             bgcolor=ft.colors.WHITE
         )

@@ -42,8 +42,7 @@ class SubmissionTable:
                                        uid=ss["uid"],
                                        file_count=ss["file_count"],
                                        status=ss["status"],
-                                       file_names=["file_names"],
-                                       hashed_file_names=["hashed_file_names"]))
+                                       hash_table=ss["hash_table"]))
             self.submissions = subs
 
     def update_submissions(self, new_sub: Submission):
