@@ -1,5 +1,3 @@
-from typing import List
-
 import flet as ft
 from entities import Submission, SubmissionTable
 
@@ -115,11 +113,12 @@ class Pages:
                 submission.anonymize_submissions(path=e.files[0].path, seperator="_",
                                                  snippet_index=lambda x: x[0] if "LATE" not in x[
                                                      0] else f"{x[0]}_{x[1]}")
-                submission.status = "Anonymized - Waiting for Results"
                 page.splash = None
                 page.update()
                 _update_fields()
             else:
+                submission.unanonymize_report(e.files[0].path)
+
                 print("deanonymize the stuff now")
 
         file_picker = ft.FilePicker(on_result=on_dialog_result)

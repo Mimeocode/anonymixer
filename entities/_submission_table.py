@@ -1,5 +1,5 @@
 from typing import List
-from .submission import Submission
+from ._submission import Submission
 
 
 class SubmissionTable:

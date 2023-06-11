@@ -1,4 +1,5 @@
 from typing import Callable
+import pdflatex
 import glob
 import zipfile
 import os
@@ -50,10 +51,21 @@ class Submission:
         shutil.make_archive(hashed_path, "zip", hashed_path)
         shutil.rmtree(hashed_path)
         shutil.rmtree(n_dir)
-        print("Success: Anonymized")
+        self.status = "Anonymized - Waiting for Results"
 
-    def unanonymize_report(self, report):
+    def unanonymize_report(self, report_path: str):
+        # TODO: make this work
+        dirname, _ = os.path.split(report_path)
+        params = {"output-directory": dirname}
+        with open(report_path, "r") as f:
+            tex = f.read()
+            for key, hash in self.hash_table.items():
+                tex.replace(hash, key)
+            pdfl = pdflatex.PDFLaTeX.from_binarystring(tex, f"{self.name}_report")
+            pdfl.params = params
+        pdf, log, cp = pdfl.create_pdf(keep_pdf_file=True, keep_log_file=False)
         self.status = "Finnished"
+
 
     def __iter__(self):
         self.file_count += 1
