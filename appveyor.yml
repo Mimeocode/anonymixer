@@ -20,6 +20,8 @@ test: off
 
 # Publish artifacts to GitHub Releases on "tag" builds
 deploy:
+  release: anonymixer-v$(APPVEYOR_BUILD_VERSION)
+  description: 'Latest AnonyMixer builds for Windows, MacOS, Ubuntu
   provider: GitHub
   auth_token: $(GITHUB_TOKEN)
   on:
