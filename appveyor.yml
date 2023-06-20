@@ -1,0 +1,69 @@
+image:
+- Visual Studio 2019
+- macOS
+- Ubuntu
+
+skip_branch_with_pr: true
+stack: python 3.10
+
+environment:
+  GITHUB_TOKEN:
+    secure: qpqulgPWDV+fWpLAA0vqk7OMhAq81Z+US6UQigGMWgqCWy2nfXEgg3uwe1OkTlM8BCN7V4XbdbhofRoQCBc2L2rqELH4YEVmeF0JsCKPQR7FMXkcMeFD8Vw6/eDfMRQJ
+
+install:
+- pip install -r requirements.txt
+
+build_script:
+- flet pack main.py --name AnonyMixer --icon assets/images/mc-logo.png  --product-name AnonyMixer --product-version 0.0.1 --copyright "Copyright (c) 2023 MimeoCode"
+
+test: off
+
+# Publish artifacts to GitHub Releases on "tag" builds
+deploy:
+  provider: GitHub
+  auth_token: $(GITHUB_TOKEN)
+  on:
+    APPVEYOR_REPO_TAG: true
+
+#
+#   Windows package
+#
+for:
+-
+  matrix:
+    only:
+    - image: Visual Studio 2019
+
+  after_build:
+  - 7z a anonymixer-win.zip %CD%\dist\*.exe
+
+  artifacts:
+  - path: anonymixer-win.zip
+
+#
+#   macOS package
+#
+-
+  matrix:
+    only:
+    - image: macOS
+
+  after_build:
+  - tar -czvf anonymixer-macos.tar.gz -C dist anonymixer.app
+
+  artifacts:
+  - path: anonymixer-macos.tar.gz
+
+#
+#   Linux package
+#
+-
+  matrix:
+    only:
+    - image: Ubuntu
+
+  after_build:
+  - tar -czvf anonymixer-linux.tar.gz -C dist AnonyMixer
+
+  artifacts:
+  - path: anonymixer-linux.tar.gz
