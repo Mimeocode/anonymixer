@@ -57,10 +57,12 @@ class Submission:
     def unanonymize_report(self, report_path: str):
         # TODO: make this work
         dirname, _ = os.path.split(report_path)
-        with open(report_path, "r") as f:
+        with open(report_path, "r+") as f:
             tex = f.read()
             for key, h in self.hash_table.items():
                 tex.replace(h, key)
+            f.write(tex)
+
             subprocess.check_call(['pdflatex', report_path])
         self.status = "Finnished"
 

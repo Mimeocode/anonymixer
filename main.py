@@ -6,7 +6,7 @@ MIMEO = "#47009e"
 
 def main(page: ft.Page):
     page.title = "MimeoCode - Anonymixer"
-    page.window_frameless = True
+    page.window_title_bar_hidden = True
     page.vertical_alignment = ft.MainAxisAlignment.START
     page.horizontal_alignment = ft.CrossAxisAlignment.END
 

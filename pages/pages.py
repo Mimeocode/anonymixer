@@ -58,13 +58,13 @@ class Pages:
 
     @staticmethod
     def _get_default_bar(page):
-        db = ft.AppBar(leading=ft.Image("assets/images/mc-logo.png"),
+        default_bar = ft.AppBar(leading=ft.Image("assets/images/mc-logo.png"),
                        title=ft.Text("MimeoCode - Anonymixer"),
                        actions=[ft.Container(
                            content=ft.IconButton(ft.icons.CLOSE, on_click=lambda _: page.window_close()),
                            padding=10)],
                        bgcolor=MIMEO)
-        return db
+        return default_bar
 
     @classmethod
     def get_home_page(cls, page: ft.Page):
