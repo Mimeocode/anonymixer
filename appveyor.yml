@@ -3,6 +3,10 @@ image:
 - macOS
 - Ubuntu
 
+branches:
+  only:
+    - main
+
 skip_branch_with_pr: true
 stack: python 3.10
 
