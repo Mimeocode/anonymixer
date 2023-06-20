@@ -63,7 +63,7 @@ for:
     - image: Ubuntu
 
   after_build:
-  - tar -czvf anonymixer-linux.tar.gz -C dist anonymixer
+  - tar -czvf anonymixer-linux.tar.gz -C dist AnonyMixer
 
   artifacts:
   - path: anonymixer-linux.tar.gz
