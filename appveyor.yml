@@ -24,9 +24,14 @@ test: off
 
 # Publish artifacts to GitHub Releases on "tag" builds
 deploy:
+  release: anonymixer-v$(APPVEYOR_BUILD_VERSION)
+  description: 'Latest AnonyMixer Release'
   provider: GitHub
   auth_token: $(GITHUB_TOKEN)
+  draft: true
+  prerelease: false
   on:
+    branch: main
     APPVEYOR_REPO_TAG: true
 
 #
