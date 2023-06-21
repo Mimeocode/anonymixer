@@ -3,6 +3,10 @@ image:
 - macOS
 - Ubuntu
 
+branches:
+  only:
+    - main
+
 skip_branch_with_pr: true
 stack: python 3.10
 
@@ -24,7 +28,10 @@ deploy:
   description: 'Latest AnonyMixer builds for Windows, MacOS, Ubuntu'
   provider: GitHub
   auth_token: $(GITHUB_TOKEN)
+  draft: true
+  prerelease: false
   on:
+    branch: main
     APPVEYOR_REPO_TAG: true
 
 #
