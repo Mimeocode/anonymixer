@@ -1,4 +1,4 @@
-# anonymixer
+# DEPRECATED anonymixer
 
 To build an executable for your system follow the steps below:
 1. _optional:_ setup a python venv
